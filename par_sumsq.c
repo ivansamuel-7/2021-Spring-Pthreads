@@ -30,6 +30,31 @@ long min = INT_MAX;
 long max = INT_MIN;
 bool done = false;
 
+/*
+ * Types for variables and functions:
+ * 
+ * pthread_t 
+ * pthread_mutex_t
+ * pthread_cond_t
+ * 
+*/
+
+/* Functions needed
+ *
+ * pthread_create ()
+ * pthread_join ()
+ * 
+ * pthread_mutex_init ()
+ * pthread_mutex_lock ()
+ * pthread_mutex_unlock()
+ * 
+ * pthread_cond_init()
+ * pthread_cond_wait()
+ * pthread_cond_signal()
+ * pthread_cond_broadcast()
+ * 
+ */
+
 // function prototypes
 void calculate_square(long number);
 
