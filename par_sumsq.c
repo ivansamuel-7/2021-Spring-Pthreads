@@ -12,11 +12,16 @@
  * Compile with --std=c99
  */
 
+// Include libraries needed 
+// These libraries were already given by sumsq.c
 #include <limits.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+// Include pthread library, don't know if I'll need it but just in case 
+#include <pthread.h>
+
 
 // aggregate variables
 long sum = 0;
