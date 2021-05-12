@@ -47,13 +47,13 @@ bool done = false;
 
 // Create nodes for task queue
 // Will need to hold information and have a pointer to point to next object
-typdef struct WTQueue_nodes {
+typedef struct WTQueue_nodes {
   long information;
   struct WTQueue_nodes *ptr; 
 } WTQueue_nodes;
 
 // Create linked list (will keep it single linked list for now, will need to see if this needs to be changed later)
-typdef struct Queue_LList {
+typedef struct Queue_LList {
   WTQueue_nodes *ptr_;
 } Queue_LList; 
 
