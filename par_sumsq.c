@@ -161,6 +161,9 @@ typedef struct Queue_LList {
  * Follow these guidelines when making the pthread functions
 */
 
+// If there's a task, thread, or whatever working, just put the lock and unlock mutex
+// Can't hurt to just put them everywhere right? 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function protoypes
 // Functions will be explained when they are created in the next section
@@ -337,6 +340,11 @@ int undo_queuetask() {
 // argv - array of strings
 int main(int argc, char* argv[])
 {
+  // Initialize number of workers
+  // int number_of_workers = 5; // For tests
+  // int number_of_workers = 10; // For tests
+  int number_of_workers = WORKERS; // may need to change number 
+
   // To test argument value
   // check and parse command line options
   if (argc != 2) { // test if argc is not 2
@@ -351,17 +359,24 @@ int main(int argc, char* argv[])
     exit(EXIT_FAILURE);
   }
 
+  // Some testing
   /*
    if (argc == 2) {
+    number_of_workers = 3;
     exit(EXIT_FAILURE);
    }
   */
 
   /*
    if (argc == 3) {
+    number_of_workers = 2;
     exit(EXIT_FAILURE);
    }
   */
+ 
+  // Some boolean values to see if task is working or finished
+  bool finished = false; // Set to false because tasks are not done at start
+  bool working = true; // Set to true, assume task is working
 
   // Some pthread things, given from slides
   pthread_t tid; // Thread identifier
@@ -385,14 +400,45 @@ int main(int argc, char* argv[])
   char action;
   long num;
 
-  while (fscanf(fin, "%c %ld\n", &action, &num) == 2) {
-    if (action == 'p') {            // process, do some work
-      calculate_square(num);
-    } else if (action == 'w') {     // wait, nothing new happening
+  // Main section of code below - Testing, tasks, and threads
+  // Will take in test files and read tasks
+  // If 'p' then // 'p' = process
+
+  /*
+   * a "processing" task with number n means it is calculating the square (n^2) of the number. 
+   * Furthermore, we will pretend that it takes n seconds to do this calculation. 
+   * Once done, each processing task will update a few global aggregate variables, 
+   * one being the resulting sum-of-squares, 
+   * and then a few other stats (odd count, min, max) to simulate a variety of shared or partially-shared global variables.
+  */
+
+  // If 'w' then do nothing // 'w' = wait
+  // Other values will not be accepted
+  while (fscanf(fin, "%c %ld\n", &action, &num) == 2) { // store input values, p=action, inputvalues=num
+    if (action == 'p') { // process, do some work
+
+      working = true; // Task is now working
+
+      pthread_mutex_lock(&lock_queue); // First things first, mutex lock
+
+      calculate_square(num); // Calculate square value 
+
+      pthread_cond_broadcast(&cond_new_addition); // Wake up threads
+
+      pthread_mutex_unlock(&lock_queue); // Mutex unlock
+
+      working = false; // Task is done working
+
+    } else if (action == 'w') { // wait, nothing new happening
+
+      working = false;
       sleep(num);
+
     } else {
+
       printf("ERROR: Unrecognized action: '%c'\n", action);
       exit(EXIT_FAILURE);
+
     }
   }
   fclose(fin);
@@ -402,9 +448,19 @@ int main(int argc, char* argv[])
   pthread_cond_broadcast(&cond_new_addition); // Use broadcast to wake up threads
   pthread_mutex_unlock(&lock_queue); // Mutex unlock
   
+  /*
+  // Test if working
+  if (working != true) {
+    printf("NOT WORKING!\n");
+  }
+  */
+
   // print results
   printf("%ld %ld %ld %ld\n", sum, odd, min, max);
   
+  // Boolean test value - all tasks are finished
+  finished = true;
+
   // clean up and return
   return (EXIT_SUCCESS);
 }
