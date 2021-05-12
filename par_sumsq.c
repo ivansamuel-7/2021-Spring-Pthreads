@@ -377,6 +377,8 @@ int main(int argc, char* argv[])
   // Some boolean values to see if task is working or finished
   bool finished = false; // Set to false because tasks are not done at start
   bool working = true; // Set to true, assume task is working
+  // bool finished; // to see what happens when I don't set boolean value
+  // bool working; // to see what happens when I don't set boolean value
 
   // Some pthread things, given from slides
   pthread_t tid; // Thread identifier
@@ -397,10 +399,10 @@ int main(int argc, char* argv[])
   // load numbers and add them to the queue
   char *fn = argv[1]; // Needed, assigns character value
   FILE* fin = fopen(fn, "r"); // Opening inputfile/datafile
-  char action;
-  long num;
+  char action; // Used for inputs from test file - what kind of action? p or w?
+  long num; // Used for inputs from test file - number input after p/w
 
-  // Main section of code below - Testing, tasks, and threads
+  // Main section of code below - Testing, tasks, mutex, and threads
   // Will take in test files and read tasks
   // If 'p' then // 'p' = process
 
@@ -432,9 +434,10 @@ int main(int argc, char* argv[])
     } else if (action == 'w') { // wait, nothing new happening
 
       working = false;
+      // printf("w has been entered and now I will do nothing...\n") // test if w is entered
       sleep(num);
 
-    } else {
+    } else { // action input other than p/w - will exit
 
       printf("ERROR: Unrecognized action: '%c'\n", action);
       exit(EXIT_FAILURE);
