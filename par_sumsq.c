@@ -145,6 +145,22 @@ typedef struct Queue_LList {
  * If there is no x.wait(), then x.signal() has no affect
 */
 
+/*
+ * pthread syntax
+ *
+ * int pthread_cond_wait (cond, mutex)
+ * 
+ * pthread_cond_t *cond;
+ * pthread_mutex_t *mutex;
+ * 
+ * int pthread_cond_timedwait (cond, mutex, timeout)
+ * pthread_cond_t *cond;
+ * pthread_mutex_t *mutex;
+ * const struct timespec *timeout;
+ * 
+ * Follow these guidelines when making the pthread functions
+*/
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function protoypes
 // Functions will be explained when they are created in the next section
@@ -244,6 +260,7 @@ Queue_LList *queue_creation() {
     DAcreate->ptr_ = NULL;
 
     // Return pointer that dynamically allocated memory
+    // return ptr_; // Can't return this value 
     return DAcreate;
 }
 
@@ -316,17 +333,36 @@ int undo_queuetask() {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main function
+// argc - arguments
+// argv - array of strings
 int main(int argc, char* argv[])
 {
+  // To test argument value
   // check and parse command line options
-  if (argc != 2) {
+  if (argc != 2) { // test if argc is not 2
     printf("Usage: sumsq <infile> <number of workers>\n");
     printf("Please enter data file and number of workers below\n");
     exit(EXIT_FAILURE);
   }
 
-  char *fn = argv[1];
-  
+  if (argc != 3) { // test if argc is not 3
+    printf("Usage: sumsq <infile> <number of workers>\n");
+    printf("Please enter data file and number of workers below\n");
+    exit(EXIT_FAILURE);
+  }
+
+  /*
+   if (argc == 2) {
+    exit(EXIT_FAILURE);
+   }
+  */
+
+  /*
+   if (argc == 3) {
+    exit(EXIT_FAILURE);
+   }
+  */
+
   // Some pthread things, given from slides
   pthread_t tid; // Thread identifier
   pthread_attr_t attr; // Set of thread attributes
@@ -344,6 +380,7 @@ int main(int argc, char* argv[])
   // printf("sum = %d\n", sum);
 
   // load numbers and add them to the queue
+  char *fn = argv[1]; // Needed, assigns character value
   FILE* fin = fopen(fn, "r"); // Opening inputfile/datafile
   char action;
   long num;
