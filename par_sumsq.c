@@ -200,7 +200,7 @@ void calculate_square(long number)
     max = number;
   }
 
-  // Mutex Lock, makes sense to put it last
+  // Mutex Unlock, makes sense to put it last
   // threads will be done doing work
   pthread_mutex_unlock(&lock_queue);
 
@@ -218,6 +218,19 @@ void *runner (void *param) {
   pthread_exit(0);
   return 0;
 }
+
+// Queue_LList function
+/*
+Queue_LList *queue_creation() {
+    pthread_mutex_lock(&lock_queue);
+    Queue_LList *DAcreate = malloc(sizeof(struct Queue_LList));
+
+    DAcreate->ptr = NULL;
+
+    return DAcreate;
+    pthread_mutex_unlock(&lock_queue);
+}
+*/ // Function did not work, will comment out for now
 
 // Function in order to create queue
 // Referenced portions of code from online source
@@ -278,7 +291,28 @@ long undo_queuetask(Queue_LList* queue_input) {
     return return_value;
 }
 
+/*
+int undo_queuetask() { 
 
+    pthread_mutex_lock(&lock_queue);
+
+    WTQueue_nodes *x = queue_input->ptr_;
+
+    if (x) {
+      queue_input->ptr_ = x->ptr;
+    }
+
+    
+    // Create new long variable to store information of created pointer and set it to value
+    int y = x -> data; // this doesn't work
+
+    // free up value
+    free(x); // don't know if needed
+
+    pthread_mutex_unlock(&lock_queue);
+    return y;
+}
+*/ // Function does not work, problem with how variables are stored, will look into more
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main function
