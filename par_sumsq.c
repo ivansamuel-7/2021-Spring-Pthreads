@@ -65,7 +65,6 @@ for (int i = 0; i < NUM_THREADS; i++) {
 // Needed mutex initializer
 // Macro initializes the static mutex - can only be used for static values
 // Have 1 so far, do I need more?
-pthread_mutex_t lock_aggregate = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t lock_queue = PTHREAD_MUTEX_INITIALIZER;
 // Also need this, it is a structure initializer 
 // Cannot use it to init the structure in a statemnt apart from declaration
@@ -95,8 +94,10 @@ typedef struct Queue_LList {
  * 
 */
 
-/* Functions needed
- *
+/* 
+ * Functions needed (Put these in front of function name)
+ * Make sure to learn more about these and how they are used to create functions
+ * 
  * pthread_create()
  * pthread_join()
  * 
@@ -109,7 +110,40 @@ typedef struct Queue_LList {
  * pthread_cond_signal()
  * pthread_cond_broadcast()
  * 
- */
+*/
+
+/*
+ * Mutex Lock Definitions (If threads are available or not)
+ *
+ * acquire() {
+ *  while (!available)
+ *  // busy wait
+ *  available = false;
+ * }
+ * 
+ * release () {
+ *  available = true;
+ * }
+ * 
+ * These two functions are to be implemented automatically
+ * Both test-and-set and compare-and-swap can be used to implement these functions
+*/
+
+/*
+ * Condition Variables
+ *
+ * These two operations are allowed on a condition variable
+ * (Do other operations work on them too?)
+ * 
+ * Use these variables for example
+ * condition x, y;
+ * 
+ * x.wait() - invokes the operation is suspended until x.signal() is used
+ * 
+ * x.signal() - resumes one process (if any) that invoked x.wait()
+ * 
+ * If there is no x.wait(), then x.signal() has no affect
+*/
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function protoypes
@@ -132,11 +166,13 @@ void *runner (void *param);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
-/*
- * update global aggregate variables given a number
- */
+
+// Given calculate_square function
+// May need to change, there should be mutex locks and unlocks when dealing with these values
 void calculate_square(long number)
 {
+  // Mutex Lock, placed at beginning but has given me problems
+  pthread_mutex_lock(&lock_queue);
 
   // calculate the square
   long the_square = number * number;
@@ -163,6 +199,11 @@ void calculate_square(long number)
   if (number > max) {
     max = number;
   }
+
+  // Mutex Lock, makes sense to put it last
+  // threads will be done doing work
+  pthread_mutex_unlock(&lock_queue);
+
 }
 
 // Function for threads to execute - given from slides
