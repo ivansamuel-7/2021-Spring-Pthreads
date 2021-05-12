@@ -95,8 +95,11 @@ void calculate_square(long number);
 // Declare create queue and delete queue functions
 // Use structs created earlier
 // Creates and deletes using dynamic allocation
-Queue_LList *create_queue(void);
-void delete_queue(Queue_LList *queue);
+Queue_LList *queue_creation(void);
+void queue_deletion(Queue_LList *queue_input);
+
+// After you queue a task, you must also undo that queue, that will be the job of this function
+long undo_queuetask (Queue_LList *queue_input);
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -133,6 +136,64 @@ void calculate_square(long number)
   }
 }
 
+// Function in order to create queue
+// Referenced portions of code from online source
+Queue_LList *queue_creation() {
+    // Set struct pointer to dynamically allocate memory
+    Queue_LList *DAcreate = (Queue_LList*)malloc(sizeof(struct Queue_LList));
+    // If this doesn't work, the function has failed to dynamically allocate memory
+    if (!DAcreate) return DAcreate; 
+
+    // Set pointer that I just created
+    DAcreate->ptr_ = NULL;
+
+    // Return pointer that dynamically allocated memory
+    return DAcreate;
+}
+
+// Function in order to delete queue
+// Referenced portions of code from online source
+// Will take in input queue value
+void queue_deletion(Queue_LList *queue_input) {
+    // If no input queue found then just return
+    if (!queue_input) return;
+
+    // Get rid of nodes that are queued already
+    while (queue_input->ptr_) undo_queuetask(queue_input);
+
+    // free function? found online, will delete queue
+    free(queue_input);
+}
+
+// Function in order to undo queue
+// Referenced portions of code from online source
+// Will take in input queue value
+long undo_queuetask(Queue_LList* queue_input) {
+
+    // Create pointer to equal value of queue input
+    // This created object will hold temporary value that will later be stored in long variable
+    WTQueue_nodes *temp_value = queue_input->ptr_;
+
+    // If temp value is true then set pointers
+    if (temp_value) {
+      queue_input->ptr_ = temp_value->ptr;
+    }
+
+    // If temp value is false just return 0
+    if (!temp_value){
+      return 0;
+    } 
+    
+    // Create new long variable to store information of created pointer
+    // Instead of returning the pointer value, set it to a long variable and then return that instead
+    const long return_value = temp_value -> information;
+
+    // get rid of new pointer, don't need it anymore
+    free(temp_value);
+
+    // Return newly created value
+    return return_value;
+}
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main function
