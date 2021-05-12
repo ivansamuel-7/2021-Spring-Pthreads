@@ -1,3 +1,5 @@
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
  * 
  * Ivan Samuel
@@ -11,7 +13,11 @@
  *
  * Compile with --std=c99
  */
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Include libraries needed 
 // These libraries were already given by sumsq.c
 #include <limits.h>
@@ -19,9 +25,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-// Include pthread library, don't know if I'll need it but just in case 
+// Include pthread library, needed for the use of pthread functions
+// pthread functions are listed in "Notes for me"
 #include <pthread.h>
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Create variables needed
+// Also create any structures needed
+// May need structs for thread queue
 
 // aggregate variables
 long sum = 0;
@@ -30,9 +41,28 @@ long min = INT_MAX;
 long max = INT_MIN;
 bool done = false;
 
+// Global Variables (if needed)
+// Guess we do need one, set number of workers
+#define WORKERS 1;
+
+// Create nodes for task queue
+// Will need to hold information and have a pointer to point to next object
+typdef struct WTQueue_nodes {
+  long information;
+  struct WTQueue_nodes *ptr; 
+} WTQueue_nodes;
+
+// Create linked list (will keep it single linked list for now, will need to see if this needs to be changed later)
+typdef struct Queue_LList {
+  Queue_LList *ptr_;
+} Queue_LList; 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Notes for me 
 /*
- * Types for variables and functions:
+ * Types for variables and functions that need to be used:
  * 
+ * Types of functions (learn about pthread library to understand them)
  * pthread_t 
  * pthread_mutex_t
  * pthread_cond_t
@@ -55,9 +85,21 @@ bool done = false;
  * 
  */
 
-// function prototypes
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Function protoypes
+// Functions will be explained when they are created in the next section
+
+// Calculate square function - given
 void calculate_square(long number);
 
+// Declare create queue and delete queue functions
+// Use structs created earlier
+// Creates and deletes using dynamic allocation
+Queue_LList *create_queue(void);
+void delete_queue(Queue_LList *queue);
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Functions
 /*
  * update global aggregate variables given a number
  */
@@ -91,7 +133,8 @@ void calculate_square(long number)
   }
 }
 
-
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Main function
 int main(int argc, char* argv[])
 {
   // check and parse command line options
@@ -125,3 +168,6 @@ int main(int argc, char* argv[])
   return (EXIT_SUCCESS);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// END //
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
