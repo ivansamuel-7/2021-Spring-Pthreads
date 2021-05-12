@@ -43,9 +43,24 @@ volatile bool done = false; // Changed type to volatile bool instead of regular 
 // Changing it to volatile will ensure that it happens before relationship among threads sharing that variable
 // This is important for threads in the main function
 
+// Data to be shared with threads - given from slides
+// int sum; // Initialized and used elsewhere 
+
 // Global Variables (if needed)
 // Guess we do need one, set number of workers
 #define WORKERS 1;
+
+// Global variable for number of threads - given from slides
+#define NUM_THREADS 10;
+
+/*
+// An array of threads to be joined upon
+pthread_t workers[NUM_THREADS];
+
+for (int i = 0; i < NUM_THREADS; i++) {
+  pthread_join (workers[i], NULL);
+}
+*/ // Not sure if needed
 
 // Needed mutex initializer
 // Macro initializes the static mutex - can only be used for static values
@@ -82,11 +97,11 @@ typedef struct Queue_LList {
 
 /* Functions needed
  *
- * pthread_create ()
- * pthread_join ()
+ * pthread_create()
+ * pthread_join()
  * 
- * pthread_mutex_init ()
- * pthread_mutex_lock ()
+ * pthread_mutex_init()
+ * pthread_mutex_lock()
  * pthread_mutex_unlock()
  * 
  * pthread_cond_init()
@@ -111,6 +126,9 @@ void queue_deletion(Queue_LList *queue_input);
 
 // After you queue a task, you must also undo that queue, that will be the job of this function
 long undo_queuetask (Queue_LList *queue_input);
+
+// Threads call this function - given from slides
+void *runner (void *param); 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Functions
@@ -145,6 +163,19 @@ void calculate_square(long number)
   if (number > max) {
     max = number;
   }
+}
+
+// Function for threads to execute - given from slides
+void *runner (void *param) {
+  int i, upper = atoi (param);
+  sum = 0;
+
+  for (i = 1; i <= upper; i++) {
+    sum += i;
+  }
+
+  pthread_exit(0);
+  return 0;
 }
 
 // Function in order to create queue
@@ -206,19 +237,39 @@ long undo_queuetask(Queue_LList* queue_input) {
     return return_value;
 }
 
+
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Main function
 int main(int argc, char* argv[])
 {
   // check and parse command line options
   if (argc != 2) {
-    printf("Usage: sumsq <infile>\n");
+    printf("Usage: sumsq <infile> <number of workers>\n");
+    printf("Please enter data file and number of workers below\n");
     exit(EXIT_FAILURE);
   }
+
   char *fn = argv[1];
   
+  // Some pthread things, given from slides
+  pthread_t tid; // Thread identifier
+  pthread_attr_t attr; // Set of thread attributes
+
+  // Set default attributes for threads
+  pthread_attr_init(&attr);
+
+  // Create thread
+  pthread_create(&tid, &attr, runner, argv[1]);
+
+  // Wait for thread to exit
+  pthread_join(tid, NULL);
+
+  // Print sum value
+  // printf("sum = %d\n", sum);
+
   // load numbers and add them to the queue
-  FILE* fin = fopen(fn, "r");
+  FILE* fin = fopen(fn, "r"); // Opening inputfile/datafile
   char action;
   long num;
 
