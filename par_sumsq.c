@@ -39,11 +39,22 @@ long sum = 0;
 long odd = 0;
 long min = INT_MAX;
 long max = INT_MIN;
-bool done = false;
+volatile bool done = false; // Changed type to volatile bool instead of regular bool
+// Changing it to volatile will ensure that it happens before relationship among threads sharing that variable
+// This is important for threads in the main function
 
 // Global Variables (if needed)
 // Guess we do need one, set number of workers
 #define WORKERS 1;
+
+// Needed mutex initializer
+// Macro initializes the static mutex - can only be used for static values
+// Have 1 so far, do I need more?
+pthread_mutex_t lock_aggregate = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t lock_queue = PTHREAD_MUTEX_INITIALIZER;
+// Also need this, it is a structure initializer 
+// Cannot use it to init the structure in a statemnt apart from declaration
+pthread_cond_t cond_new_addition = PTHREAD_COND_INITIALIZER;
 
 // Create nodes for task queue
 // Will need to hold information and have a pointer to point to next object
@@ -222,6 +233,11 @@ int main(int argc, char* argv[])
     }
   }
   fclose(fin);
+
+  // After closing the above function, will need this so workers will no longer wait on conditional 
+  pthread_mutex_lock(&lock_queue); // Mutex lock
+  pthread_cond_broadcast(&cond_new_addition); // Use broadcast to wake up threads
+  pthread_mutex_unlock(&lock_queue); // Mutex unlock
   
   // print results
   printf("%ld %ld %ld %ld\n", sum, odd, min, max);
