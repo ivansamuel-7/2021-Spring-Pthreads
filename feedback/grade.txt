@@ -1,0 +1,38 @@
+
+YOUR GRADE (out of 220): 120
+
+(Ivan, you have quite a ways to go on the project, but looking at it,
+it seems you took a shot at it. Appreciate the attempt.)
+
+
+
+Below is latest output from when I run the test makefile on your
+submission.
+
+See the README file for general grading comments.
+
+-----------------
+
+gcc -g -O2 --std=c99 -Wall -o 15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq 15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq.c -lpthread
+15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq.c: In function ‘main’:
+15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq.c:379:8: warning: variable ‘working’ set but not used [-Wunused-but-set-variable]
+   bool working = true; // Set to true, assume task is working
+        ^~~~~~~
+15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq.c:378:8: warning: variable ‘finished’ set but not used [-Wunused-but-set-variable]
+   bool finished = false; // Set to false because tasks are not done at start
+        ^~~~~~~~
+15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq.c:346:7: warning: unused variable ‘number_of_workers’ [-Wunused-variable]
+   int number_of_workers = WORKERS; // may need to change number 
+       ^~~~~~~~~~~~~~~~~
+==== Test 01 (baseline) ====
+>>>> Result should be 14 2 1 3 in all cases
+>>>> ... with 1 worker 'real' time should be ~7 seconds
+time -p ./15557-ivansamuel-7/2021-Spring-Pthreads/feedback/par_sumsq ./test-01.txt 1 2>&1
+Usage: sumsq <infile> <number of workers>
+Please enter data file and number of workers below
+Command exited with non-zero status 1
+real 0.00
+user 0.00
+sys 0.00
+../files/TestSuiteMakefile:46: recipe for target 'test01' failed
+make: *** [test01] Error 1
